@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+:root {
+  --background: #08080a;
+  --foreground: #f4f4f5;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(0, 229, 255, 0.28);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+html {
+  background: #08080a;
+  scroll-behavior: smooth;
+  scroll-padding-top: 128px;
+}
+
+body {
+  min-width: 320px;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 88px;
+  }
+}
+
+.florentin-hero {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.78)),
+    linear-gradient(115deg, rgba(255, 23, 68, 0.34), transparent 28%),
+    linear-gradient(245deg, rgba(0, 229, 255, 0.3), transparent 34%),
+    linear-gradient(20deg, rgba(255, 243, 59, 0.24), transparent 42%),
+    #080808;
+}
+
+.florentin-photo-hero {
+  background: #050505;
+}
+
+.florentin-hero::before,
+.florentin-hero::after,
+.florentin-studio-bg::before,
+.florentin-flow-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.florentin-hero::before {
+  opacity: 0.34;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    repeating-linear-gradient(0deg, transparent 0 52px, rgba(0, 0, 0, 0.42) 52px 58px),
+    repeating-linear-gradient(90deg, transparent 0 138px, rgba(0, 0, 0, 0.4) 138px 144px);
+  background-size:
+    70px 54px,
+    70px 54px,
+    100% 116px,
+    144px 116px;
+}
+
+.florentin-hero::after {
+  opacity: 0.78;
+  background:
+    linear-gradient(165deg, transparent 0 8%, rgba(255, 23, 68, 0.62) 8% 9%, transparent 9% 100%),
+    linear-gradient(24deg, transparent 0 18%, rgba(0, 229, 255, 0.58) 18% 19.5%, transparent 19.5% 100%),
+    linear-gradient(138deg, transparent 0 35%, rgba(255, 243, 59, 0.62) 35% 36.5%, transparent 36.5% 100%),
+    repeating-linear-gradient(92deg, transparent 0 74px, rgba(255, 255, 255, 0.09) 74px 77px, transparent 77px 132px);
+}
+
+.florentin-tag {
+  letter-spacing: 0;
+  text-shadow:
+    5px 5px 0 #ff1744,
+    10px 10px 0 #00e5ff,
+    15px 15px 0 #651fff,
+    0 20px 50px rgba(0, 0, 0, 0.8);
+  -webkit-text-stroke: 2px rgba(0, 0, 0, 0.8);
+}
+
+.florentin-studio-bg {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22), #070707 92%),
+    linear-gradient(115deg, rgba(0, 229, 255, 0.18), transparent 34%),
+    linear-gradient(245deg, rgba(245, 0, 87, 0.18), transparent 36%),
+    #0b0b0c;
+}
+
+.florentin-studio-bg::before {
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 64px 48px;
+}
+
+.florentin-flow-bg {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(115deg, rgba(255, 214, 0, 0.24), transparent 36%),
+    linear-gradient(245deg, rgba(0, 176, 255, 0.22), transparent 38%),
+    #0d0d0f;
+}
+
+.florentin-flow-bg::before {
+  opacity: 0.24;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0 2px,
+      transparent 2px 28px
+    );
+}
+
+.spray-scratches {
+  opacity: 0.56;
+  background:
+    repeating-linear-gradient(100deg, transparent 0 54px, rgba(255, 243, 59, 0.28) 54px 58px, transparent 58px 110px),
+    repeating-linear-gradient(18deg, transparent 0 92px, rgba(0, 229, 255, 0.22) 92px 96px, transparent 96px 164px),
+    repeating-linear-gradient(172deg, transparent 0 120px, rgba(255, 23, 68, 0.18) 120px 124px, transparent 124px 210px);
+  mix-blend-mode: screen;
+}
+
+.street-cta {
+  box-shadow:
+    8px 8px 0 rgba(0, 229, 255, 0.42),
+    -5px -5px 0 rgba(255, 23, 68, 0.4);
+}
+
+.street-panel {
+  border-radius: 8px;
+}
+
+.reference-rip {
+  border-radius: 8px;
+  clip-path: polygon(0 4%, 96% 0, 100% 92%, 94% 100%, 5% 96%, 0 82%);
+}
+
+.reference-wall-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, #090909, #101010),
+    repeating-linear-gradient(90deg, rgba(255, 243, 59, 0.12) 0 2px, transparent 2px 72px);
+}
+
+.reference-wall-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 92px 68px;
+}
+
+.florentin-upload-zone {
+  background-position: center;
+  background-size: cover;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 -70px 90px rgba(0, 0, 0, 0.62);
+}
+
+.florentin-result-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.22;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 18px, rgba(255, 255, 255, 0.12) 18px 19px),
+    repeating-linear-gradient(90deg, transparent 0 112px, rgba(0, 0, 0, 0.24) 112px 116px);
+}
