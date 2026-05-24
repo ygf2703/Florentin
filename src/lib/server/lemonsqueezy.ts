@@ -3,6 +3,7 @@ import { CREDIT_PACK_SIZE } from "@/lib/catalog";
 import { logToTerminal } from "@/lib/server/logger";
 
 const LEMON_SQUEEZY_CHECKOUT_URL = "https://api.lemonsqueezy.com/v1/checkouts";
+const DEFAULT_DIRECT_CHECKOUT_URL = "https://app.lemonsqueezy.com/share/1083129";
 
 type LemonSqueezyCheckoutResponse = {
   data?: {
@@ -45,6 +46,33 @@ function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
+function getDirectCheckoutUrl() {
+  return process.env.LS_CHECKOUT_URL || DEFAULT_DIRECT_CHECKOUT_URL;
+}
+
+function hasCheckoutApiConfig() {
+  return Boolean(process.env.LS_API_KEY && process.env.LS_STORE_ID && process.env.LS_VARIANT_ID);
+}
+
+function buildDirectCheckoutUrl(baseUrl: string, input: CheckoutSessionInput, email: string) {
+  const checkoutUrl = new URL(baseUrl);
+  checkoutUrl.searchParams.set("checkout[email]", email);
+
+  if (input.userName) {
+    checkoutUrl.searchParams.set("checkout[name]", input.userName);
+  }
+
+  if (input.userId) {
+    checkoutUrl.searchParams.set("checkout[custom][user_id]", input.userId);
+  }
+
+  checkoutUrl.searchParams.set("checkout[custom][user_email]", email);
+  checkoutUrl.searchParams.set("checkout[custom][credits]", String(CREDIT_PACK_SIZE));
+  checkoutUrl.searchParams.set("checkout[custom][product]", "florentin_15_credit_pack");
+
+  return checkoutUrl.toString();
+}
+
 export function verifyLemonSqueezyWebhookSignature(rawBody: string, signature: string, secret: string) {
   const digest = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
   const digestBuffer = Buffer.from(digest, "utf8");
@@ -64,12 +92,19 @@ export async function createLemonSqueezyCheckoutSession({
   userId,
 }: CheckoutSessionInput) {
   try {
-    const config = getLemonSqueezyConfig();
     const email = normalizeEmail(userEmail);
 
     if (!email) {
       throw new LemonSqueezyApiError("Missing user email for checkout session.");
     }
+
+    if (!hasCheckoutApiConfig()) {
+      const directCheckoutUrl = buildDirectCheckoutUrl(getDirectCheckoutUrl(), { origin, userEmail, userName, userId }, email);
+      logToTerminal(`Using direct Lemon Squeezy checkout link for ${email}`);
+      return directCheckoutUrl;
+    }
+
+    const config = getLemonSqueezyConfig();
 
     const response = await fetch(LEMON_SQUEEZY_CHECKOUT_URL, {
       method: "POST",

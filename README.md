@@ -27,8 +27,8 @@ Open `http://localhost:3000`.
 Create OAuth credentials in Google Cloud and add these redirect URLs:
 
 ```text
-http://localhost:3000/api/auth/google/callback
-https://your-domain.com/api/auth/google/callback
+http://localhost:3000/api/auth/callback/google
+https://your-domain.com/api/auth/callback/google
 ```
 
 Required environment variables:
@@ -46,13 +46,14 @@ NEXT_PUBLIC_APP_URL=
 
 Create a `.env.local` file from `.env.example` and add your Lemon Squeezy values.
 
-The checkout route uses Lemon Squeezy's Checkout API and passes the app user email, user id and credit amount via `checkout_data.custom`.
+The checkout route redirects to `LS_CHECKOUT_URL` when Checkout API keys are not configured. If `LS_API_KEY`, `LS_STORE_ID` and `LS_VARIANT_ID` are present, it uses Lemon Squeezy's Checkout API and passes the app user email, user id and credit amount via `checkout_data.custom`.
 
 Configure the Lemon Squeezy variant itself at `$5`. The app grants 15 credits for this pack. Image generation costs 1 credit. Video generation costs 5 credits, so one pack covers 15 images or 10 images plus 1 video.
 
 Required environment variables:
 
 ```bash
+LS_CHECKOUT_URL=
 LS_API_KEY=
 LS_STORE_ID=
 LS_VARIANT_ID=

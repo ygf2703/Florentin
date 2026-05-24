@@ -6,6 +6,7 @@ import type { AppUser } from "@/lib/types";
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL = "https://openidconnect.googleapis.com/v1/userinfo";
+const GOOGLE_CALLBACK_PATH = "/api/auth/callback/google";
 
 const SESSION_COOKIE = "florentin_session";
 const OAUTH_STATE_COOKIE = "florentin_oauth_state";
@@ -31,6 +32,10 @@ type GoogleUserInfo = {
 
 export class AuthConfigError extends Error {}
 export class AuthFlowError extends Error {}
+
+function normalizeOrigin(origin: string) {
+  return origin.replace(/\/$/, "");
+}
 
 function getAuthSecret() {
   const secret = process.env.AUTH_SECRET;
@@ -124,9 +129,10 @@ export function validateOAuthState(request: Request, state: string | null) {
 
 export function getGoogleAuthUrl(origin: string, state: string) {
   const { clientId } = getGoogleConfig();
+  const appOrigin = normalizeOrigin(origin);
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: `${origin}/api/auth/google/callback`,
+    redirect_uri: `${appOrigin}${GOOGLE_CALLBACK_PATH}`,
     response_type: "code",
     scope: "openid email profile",
     state,
@@ -158,9 +164,10 @@ export function getSessionUserFromRequest(request: Request): AppUser | null {
   return getUserById(userId);
 }
 
-export async function exchangeGoogleCodeForTokens(code: string, origin: string) {
+export async function exchangeGoogleCodeForTokens(code: string, origin: string, callbackPath = GOOGLE_CALLBACK_PATH) {
   try {
     const { clientId, clientSecret } = getGoogleConfig();
+    const appOrigin = normalizeOrigin(origin);
     const response = await fetch(GOOGLE_TOKEN_URL, {
       method: "POST",
       headers: {
@@ -170,7 +177,7 @@ export async function exchangeGoogleCodeForTokens(code: string, origin: string) 
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: `${origin}/api/auth/google/callback`,
+        redirect_uri: `${appOrigin}${callbackPath}`,
         grant_type: "authorization_code",
       }),
     });

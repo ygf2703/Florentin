@@ -1,11 +1,12 @@
 import { clearSessionCookie } from "@/lib/server/auth";
 import { logToTerminal } from "@/lib/server/logger";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
 export async function POST() {
   try {
-    const response = Response.json({ ok: true });
+    const response = NextResponse.json({ ok: true });
     response.headers.append("Set-Cookie", clearSessionCookie());
     return response;
   } catch (error) {

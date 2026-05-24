@@ -34,7 +34,7 @@ import {
   colorPalette,
   CREDIT_PACK_PRICE,
   CREDIT_PACK_SIZE,
-  VIDEO_CREDIT_COST,
+  IMAGE_CREDIT_COST,
   getStyle,
   styles,
   walls,
@@ -52,6 +52,8 @@ import type {
 
 const BRAND_NAME = "Florentin";
 const LOGO_SRC = "/florentin-logo-web.png";
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+const GOOGLE_AUTH_START_HREF = APP_URL ? `${APP_URL}/api/auth/google/start` : "/api/auth/google/start";
 const referenceImages = [
   {
     src: "/references/florentin-wall-01.jpg",
@@ -678,9 +680,9 @@ export function GraffitiStudio() {
       return;
     }
 
-    if (user.credits < VIDEO_CREDIT_COST) {
+    if (user.credits < IMAGE_CREDIT_COST) {
       setPaywallOpen(true);
-      setToast(`וידאו דורש ${VIDEO_CREDIT_COST} קרדיטים.`);
+      setToast("נגמרו הקרדיטים ליצירת תמונות.");
       return;
     }
 
@@ -1245,7 +1247,7 @@ function SiteHeader({
                 כניסה
               </a>
               <a
-                href="/api/auth/google/start"
+                href={GOOGLE_AUTH_START_HREF}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#fff33b] px-3 text-sm font-black text-black transition hover:bg-cyan-200"
               >
                 <Rocket className="h-4 w-4" />
@@ -1358,7 +1360,7 @@ function HeroLogin({
               אימייל
             </button>
             <a
-              href="/api/auth/google/start"
+              href={GOOGLE_AUTH_START_HREF}
               className="inline-flex h-12 min-w-48 items-center justify-center gap-2 rounded-md border border-[#fff33b]/45 bg-[#fff33b] px-4 text-sm font-black text-black transition hover:bg-cyan-200"
             >
               <UserRound className="h-4 w-4" />
