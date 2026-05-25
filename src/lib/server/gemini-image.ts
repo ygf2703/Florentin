@@ -3,7 +3,7 @@ import { logToTerminal } from "@/lib/server/logger";
 import type { GenerationOptions } from "@/lib/types";
 
 const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-const DEFAULT_GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image-preview";
+const DEFAULT_GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image";
 
 type GeminiImagePart = {
   text?: string;
