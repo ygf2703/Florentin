@@ -3,7 +3,7 @@ import { logToTerminal } from "@/lib/server/logger";
 import type { GenerationOptions } from "@/lib/types";
 
 const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-const DEFAULT_GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image-preview";
+const DEFAULT_GEMINI_IMAGE_MODEL = "gemini-2.0-flash-preview-image-generation";
 
 type GeminiImagePart = {
   text?: string;
@@ -82,13 +82,17 @@ function normalizeImageSize(value?: string) {
 }
 
 function getGeminiGenerationConfig(model: string) {
+  if (model.includes("2.0-flash-preview-image-generation") || model.includes("2.5-flash-image")) {
+    return {
+      responseModalities: ["TEXT", "IMAGE"],
+    };
+  }
+
   const image: { aspectRatio: string; imageSize?: string } = {
     aspectRatio: normalizeAspectRatio(process.env.GEMINI_IMAGE_ASPECT_RATIO),
   };
 
-  if (!model.includes("2.5-flash-image")) {
-    image.imageSize = normalizeImageSize(process.env.GEMINI_IMAGE_SIZE);
-  }
+  image.imageSize = normalizeImageSize(process.env.GEMINI_IMAGE_SIZE);
 
   return {
     responseModalities: ["TEXT", "IMAGE"],

@@ -76,9 +76,9 @@ Image generation uses Gemini Image through the Gemini API. Set `GEMINI_API_KEY` 
 Default image model:
 
 ```bash
-GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview
+GEMINI_IMAGE_MODEL=gemini-2.0-flash-preview-image-generation
 GEMINI_IMAGE_ASPECT_RATIO=1:1
 GEMINI_IMAGE_SIZE=1K
 ```
 
-The image route sends the uploaded user photo as inline base64 image data plus the Florentin graffiti prompt to Gemini. The server maps friendly values like `1:1` and `1K` to the Gemini API enum values. For older Nano Banana, set `GEMINI_IMAGE_MODEL=gemini-2.5-flash-image`; the app automatically omits `GEMINI_IMAGE_SIZE` for that model because it only supports aspect ratio. Video generation is still a local downloadable preview until the final Gemini/Veo video endpoint is connected.
+The image route sends the uploaded user photo as inline base64 image data plus the Florentin graffiti prompt to Gemini. The local default is `gemini-2.0-flash-preview-image-generation` for free-tier testing. For paid image tiers, set `GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview` or `gemini-2.5-flash-image`. The server maps friendly values like `1:1` and `1K` to Gemini API enum values when the selected model supports them, and omits image response formatting for older preview models. Video generation is still a local downloadable preview until the final Gemini/Veo video endpoint is connected.
