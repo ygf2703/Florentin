@@ -51,7 +51,7 @@ import type {
 } from "@/lib/types";
 
 const BRAND_NAME = "Florentin";
-const LOGO_SRC = "/florentin-logo-web.png";
+const LOGO_SRC = "/florentin-logo-clean.png";
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
 const GOOGLE_AUTH_START_HREF = APP_URL ? `${APP_URL}/api/auth/google/start` : "/api/auth/google/start";
 const referenceImages = [
@@ -828,13 +828,19 @@ export function GraffitiStudio() {
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,7,.62),rgba(7,7,7,.92)_48%,#070707)]" />
+        <img
+          src={LOGO_SRC}
+          alt=""
+          className="pointer-events-none absolute left-1/2 top-12 h-[min(62vw,680px)] w-[min(62vw,680px)] -translate-x-1/2 object-contain opacity-50 mix-blend-screen"
+          aria-hidden="true"
+        />
         <div className="relative mx-auto w-full max-w-7xl px-4 pb-8 sm:px-6">
           <div className="mb-6 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="flex items-center gap-4">
               <img
                 src={LOGO_SRC}
                 alt="Florentin logo"
-                className="h-20 w-20 rounded-md border border-white/10 bg-white object-cover"
+                className="h-20 w-20 object-contain drop-shadow-[0_0_24px_rgba(255,243,59,.26)]"
               />
               <div>
                 <p className="text-xs font-bold uppercase text-cyan-200">Florentin Studio</p>
@@ -1192,7 +1198,7 @@ function SiteHeader({
           <img
             src={LOGO_SRC}
             alt="Florentin logo"
-            className="h-12 w-12 shrink-0 rounded-md border border-white/10 bg-white object-cover"
+            className="h-14 w-14 shrink-0 object-contain drop-shadow-[0_0_18px_rgba(255,243,59,.30)]"
           />
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase text-cyan-200">AI Graffiti</p>
@@ -1298,7 +1304,7 @@ function HeroLogin({
       <img
         src={LOGO_SRC}
         alt="Florentin logo"
-        className="pointer-events-none absolute left-[18%] top-[42%] z-0 w-[min(58vw,620px)] -translate-x-1/2 -translate-y-1/2 opacity-45 mix-blend-screen"
+        className="pointer-events-none absolute left-[18%] top-[42%] z-0 w-[min(58vw,620px)] -translate-x-1/2 -translate-y-1/2 opacity-50 mix-blend-screen"
       />
       <div className="relative z-10 mx-auto grid min-h-[calc(92svh-7rem)] w-full max-w-7xl items-center gap-10 px-4 pb-20 sm:px-6 lg:grid-cols-[1fr_0.76fr]">
         <div className="max-w-4xl">
