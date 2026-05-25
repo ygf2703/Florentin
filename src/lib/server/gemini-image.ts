@@ -41,8 +41,23 @@ function getGeminiApiKey() {
   return apiKey;
 }
 
+function normalizeGeminiModelName(value?: string) {
+  const normalized = (value || DEFAULT_GEMINI_IMAGE_MODEL)
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .replace(/,+$/g, "")
+    .replace(/:(generateContent|predict)$/g, "");
+  const modelPathMatch = normalized.match(/(?:^|\/)models\/([^/:]+)$/);
+
+  if (modelPathMatch?.[1]) {
+    return modelPathMatch[1];
+  }
+
+  return normalized.replace(/^\/+/, "");
+}
+
 function getGeminiImageModel() {
-  return process.env.GEMINI_IMAGE_MODEL || DEFAULT_GEMINI_IMAGE_MODEL;
+  return normalizeGeminiModelName(process.env.GEMINI_IMAGE_MODEL);
 }
 
 function normalizeAspectRatio(value?: string) {
