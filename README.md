@@ -28,6 +28,7 @@ Create OAuth credentials in Google Cloud and add these redirect URLs:
 
 ```text
 http://localhost:3000/api/auth/callback/google
+https://florentini.netlify.app/api/auth/callback/google
 https://your-domain.com/api/auth/callback/google
 ```
 
@@ -70,10 +71,12 @@ https://your-domain.com/api/lemonsqueezy/webhook
 
 ## AI providers
 
-Without external API keys, the app uses local mock generation so the product flow is fully testable. Add real image/video provider calls behind:
+Image generation uses Gemini Image through the Gemini API. Set `GEMINI_API_KEY` and optionally `GEMINI_IMAGE_MODEL`.
 
-- `src/app/api/generate-image/route.ts`
-- `src/app/api/generate-video/route.ts`
-- `src/lib/prompts.ts`
+Default image model:
 
-`GEMINI_API_KEY` is already checked to label the video job as `gemini-omni`; the actual Gemini video request should be inserted in the video route once the target model/account endpoint is finalized.
+```bash
+GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview
+```
+
+The image route sends the uploaded user photo as inline base64 image data plus the Florentin graffiti prompt to Gemini. Video generation is still a local downloadable preview until the final Gemini/Veo video endpoint is connected.

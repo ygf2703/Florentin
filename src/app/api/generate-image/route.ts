@@ -1,5 +1,9 @@
-import { buildMockGraffitiImage } from "@/lib/mock-generators";
-import { colorPalette } from "@/lib/catalog";
+import { colorPalette, IMAGE_CREDIT_COST } from "@/lib/catalog";
+import {
+  generateGeminiGraffitiImage,
+  GeminiImageApiError,
+  GeminiImageConfigError,
+} from "@/lib/server/gemini-image";
 import { logToTerminal } from "@/lib/server/logger";
 import { addArtwork, getOrCreateUser, spendCredit } from "@/lib/server/store";
 import type { GenerationOptions } from "@/lib/types";
@@ -49,6 +53,14 @@ export async function POST(request: Request) {
       wallText: wallText || undefined,
     };
 
+    if (user.credits < IMAGE_CREDIT_COST) {
+      return Response.json(
+        { error: "No credits left.", code: "PAYWALL_REQUIRED", user },
+        { status: 402 },
+      );
+    }
+
+    const generated = await generateGeminiGraffitiImage(sanitizedOptions);
     const credit = spendCredit(user.id, "image");
     if (!credit.ok) {
       return Response.json(
@@ -57,7 +69,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const generated = buildMockGraffitiImage(sanitizedOptions);
     const artwork = addArtwork(user.id, {
       ...generated,
       options: sanitizedOptions,
@@ -68,6 +79,18 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown image generation error.";
     logToTerminal(`Image generation endpoint failed: ${message}`);
+
+    if (error instanceof GeminiImageConfigError) {
+      return Response.json(
+        { error: "Gemini image generation is not configured. Add GEMINI_API_KEY.", code: "BAD_REQUEST" },
+        { status: 500 },
+      );
+    }
+
+    if (error instanceof GeminiImageApiError) {
+      return Response.json({ error: message }, { status: 502 });
+    }
+
     return Response.json({ error: "Image generation failed." }, { status: 500 });
   }
 }
