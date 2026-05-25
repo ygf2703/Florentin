@@ -1,6 +1,7 @@
 import { logToTerminal } from "@/lib/server/logger";
-import { getSessionUserFromRequest } from "@/lib/server/auth";
+import { createSessionCookie, getSessionUserFromRequest } from "@/lib/server/auth";
 import { getOrCreateUser } from "@/lib/server/store";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -9,7 +10,9 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const user = getOrCreateUser(body.userId, body.email, body.name);
 
-    return Response.json({ user });
+    const response = NextResponse.json({ user });
+    response.headers.append("Set-Cookie", createSessionCookie(user));
+    return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown session error.";
     logToTerminal(`Session POST failed: ${message}`);

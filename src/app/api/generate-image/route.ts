@@ -82,13 +82,19 @@ export async function POST(request: Request) {
 
     if (error instanceof GeminiImageConfigError) {
       return Response.json(
-        { error: "Gemini image generation is not configured. Add GEMINI_API_KEY.", code: "BAD_REQUEST" },
+        {
+          error: "Gemini לא מוגדר בשרת. צריך להוסיף GEMINI_API_KEY ב-Netlify ולעשות Deploy חדש.",
+          code: "GEMINI_NOT_CONFIGURED",
+        },
         { status: 500 },
       );
     }
 
     if (error instanceof GeminiImageApiError) {
-      return Response.json({ error: message }, { status: 502 });
+      return Response.json(
+        { error: `Gemini לא הצליח ליצור תמונה: ${message}`, code: "GEMINI_IMAGE_FAILED" },
+        { status: 502 },
+      );
     }
 
     return Response.json({ error: "Image generation failed." }, { status: 500 });

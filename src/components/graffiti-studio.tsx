@@ -488,6 +488,7 @@ export function GraffitiStudio() {
   const [videoAsset, setVideoAsset] = useState<VideoAsset | null>(null);
   const [paywallOpen, setPaywallOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const [generationError, setGenerationError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -627,6 +628,7 @@ export function GraffitiStudio() {
       const resized = await readAndResizeImage(file);
       setSourceImage(resized);
       setSourceFileName(file.name);
+      setGenerationError("");
       setToast("התמונה מוכנה לעיבוד.");
     } catch (error) {
       setToast(error instanceof Error ? error.message : "העלאת התמונה נכשלה.");
@@ -687,6 +689,7 @@ export function GraffitiStudio() {
     }
 
     setIsGeneratingImage(true);
+    setGenerationError("");
     setVideoAsset(null);
     try {
       const response = await apiPost<{ user: AppUser; artwork: Artwork }>("/api/generate-image", {
@@ -698,6 +701,7 @@ export function GraffitiStudio() {
       setUser(response.user);
       setLatestArtwork(response.artwork);
       setGallery((current) => [response.artwork, ...current].slice(0, 8));
+      setGenerationError("");
       setToast("הקיר נוצר ונשמר בגלריה.");
     } catch (error) {
       const failure = error as ApiFailure;
@@ -705,7 +709,9 @@ export function GraffitiStudio() {
         setUser(failure.payload?.user ?? user);
         setPaywallOpen(true);
       } else {
-        setToast(failure.message);
+        const message = failure.message || "לא הצלחתי ליצור תמונה כרגע.";
+        setGenerationError(message);
+        setToast(message);
       }
     } finally {
       setIsGeneratingImage(false);
@@ -869,7 +875,11 @@ export function GraffitiStudio() {
                   ref={fileInputRef}
                   type="file"
                   accept="image/png,image/jpeg"
-                  className="hidden"
+                  className="pointer-events-none absolute h-px w-px opacity-0"
+                  tabIndex={-1}
+                  onClick={(event) => {
+                    event.currentTarget.value = "";
+                  }}
                   onChange={(event) => handleFileChange(event.target.files?.[0])}
                 />
                 <button
@@ -1112,6 +1122,11 @@ export function GraffitiStudio() {
                           {sourceImage ? <Sparkles className="h-4 w-4" /> : <ImagePlus className="h-4 w-4" />}
                           {sourceImage ? "ליצור מהתמונה הזו" : "להעלות תמונה"}
                         </button>
+                        {generationError ? (
+                          <p className="mt-4 rounded-md border border-red-300/35 bg-red-500/15 px-4 py-3 text-sm font-bold leading-6 text-red-50">
+                            {generationError}
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                   )}

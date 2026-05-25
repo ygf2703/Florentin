@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     const response = NextResponse.redirect(`${origin}/?auth=success`);
     response.headers.append("Set-Cookie", clearOAuthStateCookie());
-    response.headers.append("Set-Cookie", createSessionCookie(user.id));
+    response.headers.append("Set-Cookie", createSessionCookie(user));
     return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown Google callback error.";

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { logToTerminal } from "@/lib/server/logger";
-import { getOrCreateUserByEmail, getUserById } from "@/lib/server/store";
+import { getOrCreateUser, getOrCreateUserByEmail, getUserById } from "@/lib/server/store";
 import type { AppUser } from "@/lib/types";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -29,6 +29,8 @@ type GoogleUserInfo = {
   name?: string;
   picture?: string;
 };
+
+type SessionPayload = Pick<AppUser, "id" | "email" | "name" | "createdAt">;
 
 export class AuthConfigError extends Error {}
 export class AuthFlowError extends Error {}
@@ -96,8 +98,38 @@ function serializeCookie(name: string, value: string, maxAge: number) {
   return `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
 }
 
-export function createSessionCookie(userId: string) {
-  const value = `${userId}.${hmac(userId)}`;
+function encodeSessionPayload(user: AppUser | string) {
+  if (typeof user === "string") {
+    return user;
+  }
+
+  const payload: SessionPayload = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    createdAt: user.createdAt,
+  };
+
+  return Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+}
+
+function decodeSessionPayload(value: string) {
+  try {
+    const payload = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as Partial<SessionPayload>;
+
+    if (!payload.id || !payload.email) {
+      return null;
+    }
+
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export function createSessionCookie(user: AppUser | string) {
+  const payload = encodeSessionPayload(user);
+  const value = `${payload}.${hmac(payload)}`;
   return serializeCookie(SESSION_COOKIE, value, COOKIE_MAX_AGE);
 }
 
@@ -154,14 +186,19 @@ export function getSessionUserFromRequest(request: Request): AppUser | null {
     return null;
   }
 
-  const userId = session.slice(0, separatorIndex);
+  const payload = session.slice(0, separatorIndex);
   const signature = session.slice(separatorIndex + 1);
 
-  if (!timingSafeEqual(hmac(userId), signature)) {
+  if (!timingSafeEqual(hmac(payload), signature)) {
     return null;
   }
 
-  return getUserById(userId);
+  const sessionPayload = decodeSessionPayload(payload);
+  if (sessionPayload) {
+    return getOrCreateUser(sessionPayload.id, sessionPayload.email, sessionPayload.name);
+  }
+
+  return getUserById(payload);
 }
 
 export async function exchangeGoogleCodeForTokens(code: string, origin: string, callbackPath = GOOGLE_CALLBACK_PATH) {

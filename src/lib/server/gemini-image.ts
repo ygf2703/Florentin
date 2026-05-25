@@ -3,7 +3,7 @@ import { logToTerminal } from "@/lib/server/logger";
 import type { GenerationOptions } from "@/lib/types";
 
 const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-const DEFAULT_GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image";
+const DEFAULT_GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image-preview";
 
 type GeminiImagePart = {
   text?: string;
@@ -43,6 +43,21 @@ function getGeminiApiKey() {
 
 function getGeminiImageModel() {
   return process.env.GEMINI_IMAGE_MODEL || DEFAULT_GEMINI_IMAGE_MODEL;
+}
+
+function getGeminiGenerationConfig(model: string) {
+  const image: { aspectRatio: string; imageSize?: string } = {
+    aspectRatio: "1:1",
+  };
+
+  if (!model.includes("2.5-flash-image")) {
+    image.imageSize = process.env.GEMINI_IMAGE_SIZE || "1K";
+  }
+
+  return {
+    responseModalities: ["TEXT", "IMAGE"],
+    responseFormat: { image },
+  };
 }
 
 function parseDataUrl(dataUrl: string) {
@@ -104,15 +119,7 @@ export async function generateGeminiGraffitiImage(options: GenerationOptions) {
             ],
           },
         ],
-        generationConfig: {
-          responseModalities: ["IMAGE"],
-          responseFormat: {
-            image: {
-              aspectRatio: "1:1",
-              imageSize: "1K",
-            },
-          },
-        },
+        generationConfig: getGeminiGenerationConfig(model),
       }),
     });
 
