@@ -45,6 +45,7 @@ function normalizeGeminiModelName(value?: string) {
   const normalized = (value || DEFAULT_GEMINI_IMAGE_MODEL)
     .trim()
     .replace(/^["']|["']$/g, "")
+    .replace(/^GEMINI_IMAGE_MODEL\s*=\s*/i, "")
     .replace(/,+$/g, "")
     .replace(/:(generateContent|predict)$/g, "");
   const modelPathMatch = normalized.match(/(?:^|\/)models\/([^/:]+)$/);
